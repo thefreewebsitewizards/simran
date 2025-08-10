@@ -7,7 +7,7 @@ const tabButtons = document.querySelectorAll('.tab-button');
 const tabContents = document.querySelectorAll('.tab-content');
 const categoryBtns = document.querySelectorAll('.category-btn');
 const galleryItems = document.querySelectorAll('.gallery-item');
-const ugcItems = document.querySelectorAll('.ugc-item');
+const ugcItems = document.querySelectorAll('.video-container');
 const lightbox = document.getElementById('lightbox');
 const lightboxImage = document.getElementById('lightbox-image');
 const closeLightbox = document.querySelector('.close-lightbox');
@@ -669,8 +669,8 @@ function initializeUGCVideos() {
         const video = item.querySelector('video');
         if (video) {
             console.log('Setting up video:', video.src || video.querySelector('source')?.src);
-            // Remove default controls and make video clickable
-            video.removeAttribute('controls');
+            // Keep default controls and make video clickable
+            video.setAttribute('controls', 'true');
             video.style.cursor = 'pointer';
             
             // Add load event listener for debugging
@@ -686,45 +686,57 @@ function initializeUGCVideos() {
                 console.error('Video error:', e, video.src);
             });
             
+            // Add click event to video container for play button overlay
+            item.addEventListener('click', function(e) {
+                // If clicking on the play button overlay or video
+                if (e.target === item || e.target === video) {
+                    playVideo(video, item);
+                }
+            });
+            
             // Add click event to play/pause video
             video.addEventListener('click', function() {
-                console.log('Video clicked:', video.src, 'paused:', video.paused);
-                if (video.paused) {
+                playVideo(video, item);
+            });
+            
+            function playVideo(videoElement, containerElement) {
+                console.log('Video clicked:', videoElement.src, 'paused:', videoElement.paused);
+                if (videoElement.paused) {
                     // Pause all other videos first
                     ugcItems.forEach(otherItem => {
                         const otherVideo = otherItem.querySelector('video');
-                        if (otherVideo && otherVideo !== video) {
+                        if (otherVideo && otherVideo !== videoElement) {
                             otherVideo.pause();
                             otherVideo.muted = true;
                             otherItem.classList.remove('playing');
                         }
                     });
                     // Unmute and play the clicked video
-                    video.muted = false;
-                    const playPromise = video.play();
+                    videoElement.muted = false;
+                    const playPromise = videoElement.play();
                     if (playPromise !== undefined) {
                         playPromise.then(() => {
                             console.log('Video started playing successfully');
-                            item.classList.add('playing');
+                            containerElement.classList.add('playing');
                         }).catch(error => {
                             console.error('Error playing video:', error);
-                            video.muted = true; // Fallback to muted if autoplay fails
-                            video.play().then(() => {
+                            videoElement.muted = true; // Fallback to muted if autoplay fails
+                            videoElement.play().then(() => {
                                 console.log('Video playing muted as fallback');
-                                item.classList.add('playing');
+                                containerElement.classList.add('playing');
                             }).catch(err => {
                                 console.error('Failed to play video even muted:', err);
                             });
                         });
                     } else {
-                        item.classList.add('playing');
+                        containerElement.classList.add('playing');
                     }
                 } else {
-                    video.pause();
-                    video.muted = true;
-                    item.classList.remove('playing');
+                    videoElement.pause();
+                    videoElement.muted = true;
+                    containerElement.classList.remove('playing');
                 }
-            });
+            }
             
             // Hide play button when video is playing
             video.addEventListener('play', function() {

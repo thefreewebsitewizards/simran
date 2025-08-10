@@ -51,7 +51,7 @@ class VideoHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 # Add MIME type for MP4
 mimetypes.add_type('video/mp4', '.mp4')
 
-PORT = 8081
+PORT = 8083
 Handler = VideoHTTPRequestHandler
 
 with socketserver.TCPServer(('', PORT), Handler) as httpd:
