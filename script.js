@@ -98,10 +98,120 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeLightbox();
     initializeScrollAnimations();
     initializeContactForm();
+    initializeCourseForm();
+    initializeCarousel();
+    initializeTestimonialCarousel();
     initializeSmoothScrolling();
     initializePageTransitions();
     initializeUGCVideos();
 });
+
+// Testimonial Carousel Functionality
+function initializeTestimonialCarousel() {
+    const carousel = document.querySelector('.testimonials-carousel');
+    if (!carousel) return;
+    
+    const track = carousel.querySelector('.testimonials-track');
+    const slides = carousel.querySelectorAll('.testimonial-slide');
+    const indicators = carousel.querySelectorAll('.testimonial-indicator');
+    
+    let currentSlide = 0;
+    let isTransitioning = false;
+    let autoSlideInterval;
+    
+    // Show specific slide
+    function showSlide(index) {
+        if (isTransitioning || index === currentSlide) return;
+        
+        isTransitioning = true;
+        
+        // Remove active class from current slide
+        slides[currentSlide].classList.remove('active');
+        indicators[currentSlide].classList.remove('active');
+        
+        // Update current slide index
+        currentSlide = index;
+        
+        // Move track
+        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        
+        // Add active class to new slide
+        setTimeout(() => {
+            slides[currentSlide].classList.add('active');
+            indicators[currentSlide].classList.add('active');
+            isTransitioning = false;
+        }, 100);
+    }
+    
+    // Next slide
+    function nextSlide() {
+        const next = (currentSlide + 1) % slides.length;
+        showSlide(next);
+    }
+    
+    // Previous slide
+    function prevSlide() {
+        const prev = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(prev);
+    }
+    
+    // Auto slide functionality
+    function startAutoSlide() {
+        autoSlideInterval = setInterval(nextSlide, 5000);
+    }
+    
+    function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+    }
+    
+    // Event listeners removed for buttons
+    
+    // Indicator clicks
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            showSlide(index);
+            stopAutoSlide();
+            startAutoSlide();
+        });
+    });
+    
+    // Pause on hover
+    carousel.addEventListener('mouseenter', stopAutoSlide);
+    carousel.addEventListener('mouseleave', startAutoSlide);
+    
+    // Keyboard navigation removed
+    
+    // Touch/swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    carousel.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        stopAutoSlide();
+    });
+    
+    carousel.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+        startAutoSlide();
+    });
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
+        }
+    }
+    
+    // Initialize
+    startAutoSlide();
+}
 
 // Navigation functionality
 function initializeNavigation() {
@@ -772,20 +882,20 @@ function showPreloader() {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        width: 100vw;
+        height: 100vh;
         background: linear-gradient(135deg, #faf8f5 0%, #f5f0eb 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
         z-index: 9999;
         transition: opacity 0.5s ease;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     `;
     
     preloader.innerHTML = `
-        <div style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <div style="width: 50px; height: 50px; border: 3px solid #e0e0e0; border-top: 3px solid #DAA520; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;"></div>
-            <p style="color: #8b7355; font-family: 'Playfair Display', serif; font-size: 18px; letter-spacing: 2px; margin: 0;">SIMRAN</p>
+        <div style="position: fixed; top: calc(50vh - 0px); left: calc(50vw - 0px); transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; margin: 0; padding: 0;">
+            <div style="width: 50px; height: 50px; border: 3px solid #e0e0e0; border-top: 3px solid #DAA520; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; margin-left: 0; margin-right: 0;"></div>
+            <p style="color: #8b7355; font-family: 'Playfair Display', serif; font-size: 18px; letter-spacing: 2px; margin: 0; padding: 0; text-align: center;">SIMRAN</p>
         </div>
     `;
     
@@ -897,5 +1007,282 @@ function handleImageErrors() {
 
 // Initialize error handling
 document.addEventListener('DOMContentLoaded', handleImageErrors);
+
+// Course Form functionality
+function initializeCourseForm() {
+    const courseForm = document.querySelector('.course-form');
+    if (!courseForm) return;
+    
+    const formInputs = courseForm.querySelectorAll('input, textarea');
+    const priorExperienceRadios = courseForm.querySelectorAll('input[name="priorExperience"]');
+    const experienceDetails = document.getElementById('experienceDetails');
+    
+    // Enhanced input animations with luxury feel
+    formInputs.forEach(input => {
+        const formGroup = input.parentElement;
+        
+        input.addEventListener('focus', function() {
+            formGroup.classList.add('focused');
+            this.style.transform = 'translateY(-2px)';
+        });
+
+        input.addEventListener('blur', function() {
+            if (!this.value.trim()) {
+                formGroup.classList.remove('focused');
+                this.style.transform = 'translateY(0)';
+            }
+        });
+
+        // Real-time validation with luxury styling
+        input.addEventListener('input', function() {
+            if (this.value.trim()) {
+                formGroup.classList.add('has-content');
+            } else {
+                formGroup.classList.remove('has-content');
+            }
+        });
+    });
+    
+    // Handle conditional experience details field
+    priorExperienceRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'yes') {
+                experienceDetails.style.display = 'block';
+                experienceDetails.style.animation = 'fadeInUp 0.5s ease forwards';
+            } else {
+                experienceDetails.style.display = 'none';
+            }
+        });
+    });
+    
+    // Course form submission
+    courseForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        // Enhanced validation
+        let isValid = true;
+        const requiredFields = this.querySelectorAll('input[required], textarea[required]');
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.parentElement.classList.add('error');
+                isValid = false;
+                setTimeout(() => {
+                    field.parentElement.classList.remove('error');
+                }, 3000);
+            }
+        });
+        
+        // Validate email format
+        const email = formData.get('courseEmail');
+        if (email && !isValidEmail(email)) {
+            showNotification('Please enter a valid email address.', 'error');
+            return;
+        }
+        
+        // Check if at least one interest is selected
+        const interests = formData.getAll('interests');
+        if (interests.length === 0) {
+            showNotification('Please select at least one area of interest.', 'error');
+            return;
+        }
+        
+        if (!isValid) {
+            showNotification('Please fill in all required fields.', 'error');
+            return;
+        }
+        
+        // Luxury loading animation
+        const submitButton = this.querySelector('.course-submit');
+        const originalText = submitButton.textContent;
+        
+        submitButton.style.transform = 'scale(0.95)';
+        submitButton.innerHTML = '<span class="loading-dots">Registering<span>.</span><span>.</span><span>.</span></span>';
+        submitButton.disabled = true;
+        
+        // Simulate course registration submission
+        setTimeout(() => {
+            submitButton.innerHTML = '✓ Registration Submitted!';
+            submitButton.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+            submitButton.style.transform = 'scale(1)';
+            
+            showNotification('Thank you for your interest! I\'ll review your application and get back to you within 24 hours.', 'success');
+            
+            // Reset form with staggered animation
+            setTimeout(() => {
+                formInputs.forEach((input, index) => {
+                    setTimeout(() => {
+                        if (input.type !== 'radio' && input.type !== 'checkbox') {
+                            input.value = '';
+                            input.parentElement.classList.remove('focused', 'has-content');
+                            input.style.transform = 'translateY(0)';
+                        } else {
+                            input.checked = false;
+                        }
+                    }, index * 50);
+                });
+                
+                // Hide conditional field
+                experienceDetails.style.display = 'none';
+                
+                setTimeout(() => {
+                    submitButton.innerHTML = originalText;
+                    submitButton.style.background = '';
+                    submitButton.disabled = false;
+                }, 1000);
+            }, 2000);
+        }, 2500);
+    });
+}
+
+// Image Carousel functionality
+function initializeCarousel() {
+    const carousel = document.querySelector('.image-carousel');
+    if (!carousel) return;
+    
+    const slides = carousel.querySelectorAll('.carousel-slide');
+    const indicators = carousel.querySelectorAll('.indicator');
+    const prevBtn = carousel.querySelector('.prev-btn');
+    const nextBtn = carousel.querySelector('.next-btn');
+    
+    let currentSlide = 0;
+    let isTransitioning = false;
+    let autoPlayInterval;
+    
+    // Auto-play functionality
+    function startAutoPlay() {
+        autoPlayInterval = setInterval(() => {
+            if (!isTransitioning) {
+                nextSlide();
+            }
+        }, 4000); // Change slide every 4 seconds
+    }
+    
+    function stopAutoPlay() {
+        clearInterval(autoPlayInterval);
+    }
+    
+    // Show specific slide
+    function showSlide(index) {
+        if (isTransitioning || index === currentSlide) return;
+        
+        isTransitioning = true;
+        
+        // Remove active class from current slide and indicator
+        slides[currentSlide].classList.remove('active');
+        indicators[currentSlide].classList.remove('active');
+        
+        // Update current slide index
+        currentSlide = index;
+        
+        // Add active class to new slide and indicator
+        slides[currentSlide].classList.add('active');
+        indicators[currentSlide].classList.add('active');
+        
+        // Reset transition flag after animation completes
+        setTimeout(() => {
+            isTransitioning = false;
+        }, 600);
+    }
+    
+    // Next slide
+    function nextSlide() {
+        const nextIndex = (currentSlide + 1) % slides.length;
+        showSlide(nextIndex);
+    }
+    
+    // Previous slide
+    function prevSlide() {
+        const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(prevIndex);
+    }
+    
+    // Event listeners
+    nextBtn.addEventListener('click', () => {
+        stopAutoPlay();
+        nextSlide();
+        startAutoPlay();
+    });
+    
+    prevBtn.addEventListener('click', () => {
+        stopAutoPlay();
+        prevSlide();
+        startAutoPlay();
+    });
+    
+    // Indicator clicks
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            stopAutoPlay();
+            showSlide(index);
+            startAutoPlay();
+        });
+    });
+    
+    // Pause auto-play on hover
+    carousel.addEventListener('mouseenter', stopAutoPlay);
+    carousel.addEventListener('mouseleave', startAutoPlay);
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (carousel.matches(':hover')) {
+            if (e.key === 'ArrowLeft') {
+                stopAutoPlay();
+                prevSlide();
+                startAutoPlay();
+            } else if (e.key === 'ArrowRight') {
+                stopAutoPlay();
+                nextSlide();
+                startAutoPlay();
+            }
+        }
+    });
+    
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    carousel.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        stopAutoPlay();
+    });
+    
+    carousel.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+        startAutoPlay();
+    });
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                nextSlide(); // Swipe left - next slide
+            } else {
+                prevSlide(); // Swipe right - previous slide
+            }
+        }
+    }
+    
+    // Start auto-play when carousel is initialized
+    startAutoPlay();
+    
+    // Intersection Observer for performance
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                startAutoPlay();
+            } else {
+                stopAutoPlay();
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    observer.observe(carousel);
+}
 
 console.log('Simran Portfolio Website - Initialized Successfully');
