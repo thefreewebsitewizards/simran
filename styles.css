@@ -593,7 +593,7 @@ h1, h2, h3, h4, h5, h6 {
     aspect-ratio: 3/4;
     overflow: hidden;
     cursor: pointer;
-    opacity: 0;
+    opacity: 0.2;
     transform: translateY(30px);
     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -1109,13 +1109,33 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0 40px;
 }
 
-.learn-main-content {
+/* .learn-main-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 60px;
     margin: 60px 0;
     align-items: center;
+} */
+
+
+.learn-main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* two columns on large screens */
+    gap: 60px;
+    margin: 60px 0;
+    align-items: center;
 }
+
+/* 📱 Mobile view: stack content vertically */
+@media (max-width: 768px) {
+    .learn-main-content {
+        grid-template-columns: 1fr; /* single column */
+        gap: 30px; /* smaller gap for mobile */
+        margin: 30px 0; /* less margin for compact view */
+    }
+}
+
+
 
 .learn-intro {
     padding-right: 20px;

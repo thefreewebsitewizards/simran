@@ -439,7 +439,7 @@ function initializeScrollAnimations() {
                 galleryItems.forEach((item, index) => {
                     setTimeout(() => {
                         item.classList.add('animate');
-                    }, index * 100); // 100ms delay between each item
+                    }, index * 10); // 100ms delay between each item
                 });
             } else {
                 // Reset animations when scrolling away
@@ -1010,6 +1010,7 @@ document.addEventListener('DOMContentLoaded', handleImageErrors);
 
 // Course Form functionality
 function initializeCourseForm() {
+    console.log('Course form initialized ✅');
     const courseForm = document.querySelector('.course-form');
     if (!courseForm) return;
     
