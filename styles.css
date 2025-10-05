@@ -593,7 +593,7 @@ h1, h2, h3, h4, h5, h6 {
     aspect-ratio: 3/4;
     overflow: hidden;
     cursor: pointer;
-    opacity: 0.2;
+    opacity: 1;
     transform: translateY(30px);
     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -1163,6 +1163,42 @@ h1, h2, h3, h4, h5, h6 {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     aspect-ratio: 3/4;
 }
+
+/* ✅ Fix horizontal overflow on small screens */
+@media (max-width: 420px) {
+    .learn-container {
+        padding: 0 15px; /* reduce horizontal padding */
+        box-sizing: border-box;
+    }
+
+    .learn-main-content {
+        grid-template-columns: 1fr;
+        gap: 25px;
+        margin: 30px 0;
+    }
+
+    /* make sure children don’t overflow */
+    .learn-main-content > * {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* ensure images scale properly */
+    .learn-main-content img,
+    .image-carousel {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+    }
+
+    /* prevent horizontal scrolling globally */
+    html, body {
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+    }
+}
+
 
 .carousel-track {
     position: relative;
